@@ -1,0 +1,35 @@
+.top-30 {
+    margin-top: 30px;
+}
+
+h2 {
+    margin-bottom: 30px;
+}
+
+.btn-default {
+    margin-top: 12px;
+}
+
+.radiolist li {
+    display: inline;
+    padding-right: 10px;
+}
+
+.form-signin {
+    margin-left: 70px;
+}
+
+.input-tabbed {
+    margin-left: 40px;
+}
+
+.large-glyph {
+    font-size: 18px;
+}
+
+.no-pad {
+    padding-left: 0px;
+}
+
+.no-marg {
+    margin-left: 0px;

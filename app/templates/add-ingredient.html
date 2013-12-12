@@ -1,0 +1,30 @@
+<!-- extends base.html layout -->
+{% extends "base.html" %}
+
+{% block header %}
+<link href="{{ url_for('.static', filename = 'css/addingred.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row top-30">
+		<form class="form-signin" action="" method="post" name="addingredient">
+			{{form.hidden_tag()}}
+			<h2>Add New Ingredient</h2>
+			<p>Ingredient Name: <br></p>
+			<p>{{form.name(size = 50)}}<br></p>
+			<p>Calories per mL: <br></p>
+			<p>{{form.calories_per_ml(size = 10)}}<br></p>
+			<p>Calories per g: <br></p>
+			<p>{{form.calories_per_g(size = 10)}}<br></p>
+			<p>Calories per tbs: <br></p>
+			<p>{{form.calories_per_tbs(size = 10)}}<br></p>
+			<p>Calories per tsp: <br></p>
+			<p>{{form.calories_per_tsp(size = 10)}}<br></p>
+			<p>Calories per each: <br></p>
+			<p>{{form.calories_per_each(size = 10)}}<br></p>
+			<button class="btn btn-default" type="submit">Submit</button>
+		</form>
+	</div>
+</div>
+{% endblock %}

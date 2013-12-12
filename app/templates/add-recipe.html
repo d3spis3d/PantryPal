@@ -1,0 +1,135 @@
+<!-- extends base.html layout -->
+{% extends "base.html" %}
+
+{% block header %}
+<link href="{{ url_for('.static', filename = 'css/addrecipe.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row top-30">
+	<form class="form-signin" action="" method="post" name="addrecipe">
+		{{form.hidden_tag()}}
+		<h2>Add New Recipe</h2>
+		<p>
+			Recipe Name: <br>
+		</p>
+		<p>
+			{{form.name(size=50, class_='input-tabbed')}} <br>
+		</p>
+		<p>
+			Meal Type: <br>
+			<ul class="radiolist">
+				{% for subfield in form.type %}
+				<li>{{subfield}} {{subfield.label}}</li>
+				{% endfor %}
+			</ul>
+		</p>
+		<p>
+			Preparation Time: <br>
+			<ul class="radiolist">
+				{% for subfield in form.time %}
+				<li>{{subfield}} {{subfield.label}}</li>
+				{% endfor %}
+			</ul>
+		</p>
+		<p>
+			Meal Category: <br>
+			<ul class="radiolist">
+				{% for subfield in form.category %}
+				<li>{{subfield}} {{subfield.label}}</li>
+				{% endfor %}
+			</ul>
+		</p>
+		<p>
+			Serves: <br>
+			{{form.serves(size = 10, class_='input-tabbed')}} <br>
+		</p>
+		<hr>
+		<div class="container no-pad">
+			<div>
+				<p>Ingredients:  
+				<!-- button to trigger ingredient adding modal -->
+				<a data-toggle="modal" href="#ingredModal"><i class="glyphicon glyphicon-plus large-glyph"></i></a>
+				</p>
+			</div>				
+			<div id="insert">
+			</div>
+		</div>
+		<hr>
+		<p>
+			Method: <br>
+		</p>
+		<p>
+			{{form.method(cols="100", rows="7")}} <br>
+		</p>
+		<button class="btn btn-default" type="submit">Submit</button>
+	</form>
+</div>
+<script type="text/javascript">
+		
+	function addIngredient() {
+		var ingredients = [];
+		var iName = $('input[name=iname]').val();
+		var quant = $('input[name=quantity]').val();
+		var q_type = $('select[name=q_type]').val();
+		$('#insert').append('<button class="btn btn-success ingred-button" type="button">' + quant + q_type + ' of ' + iName + '</button>');
+		ingredients.push(iName);
+		ingredients.push(quant);
+		ingredients.push(q_type);
+		
+		$.ajax({
+			type: "POST",
+			contentType: "application/json",
+			url: "{{ url_for('add_recipe_ingredient') }}",
+			data: JSON.stringify({"name": ingredients[0], "quantity": ingredients[1],
+						"q_type": ingredients[2]}),
+			dataType: "json"
+		});
+		
+		$('input[name=iname]').val('');
+		$('input[name=quantity]').val('');
+		$('select[name=q_type]').val('');
+	};
+	
+	function finish() {
+		$('input[name=iname]').val('');
+		$('input[name=quantity]').val('');
+		$('select[name=q_type]').val('');
+		$('#ingredModal').modal('hide');
+	};
+	
+</script>
+
+<!-- ingredient modal -->
+<div class="modal fade" id="ingredModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Add Ingredient</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-add-recipe">
+					<p>Ingredient Name:</p>
+					<input class="form-control" id="c" type="text" name="iname" placeholder="Ingredient Name"></input>
+					<p>Quantity:</p>
+					<input class="form-control" id="c" type="text" name="quantity" placeholder="Quantity"></input>
+					<p>Quantity Type:</p>
+					<select class="form-control" name="q_type" placeholder="Quantity Type">
+						<option></option>
+						<option value="g">g</option>
+						<option value="ml">mL</option>
+						<option value="tbs">tbs</option>
+						<option value="tsp">tsp</option>
+						<option value="each">each</option>
+					</select>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="addmodal" class="btn btn-default" onclick="addIngredient();">Add</button>
+				<button type="button" id="submitmodal" class="btn btn-default" onclick="finish();">Finished</button>
+			</div>
+		</div>
+	</div>
+</div> <!-- end of modal -->
+{% endblock %}

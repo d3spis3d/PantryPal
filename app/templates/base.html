@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="{{ url_for('.static', filename = 'css/bootstrap.css') }}" rel="stylesheet">
+	<link href="{{ url_for('.static', filename = 'css/magic-bootstrap.css') }}" rel="stylesheet">
+	<link href="{{ url_for('.static', filename = 'css/base.css') }}" rel="stylesheet">
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	{% block header %}
+	{% endblock %}
+	
+    {% if title %}
+    <title>{{title}} - PantryPal</title>
+    {% else %}
+    <title>PantryPal</title>
+    {% endif %}
+  </head>
+  
+  <body>
+	
+	<div class="container">
+		<!-- Fixed Navbar -->
+		<div class="navbar navbar-default">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">PantryPal</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="/">Weeks Plan</a></li>
+						<li><a href="/">Calories</a></li>
+						<li><a href="{{url_for('recipe')}}">Recipes</a></li>
+						<li><a href="/">Pantry Organiser</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						{% if g.user.is_authenticated() %}
+						<li><a href="/">{{g.user.username}}</a></li>
+						<li><a href="/logout">Log Out</a></li>
+						{% else %}
+						<li><a href="/login">Log In</a></li>
+						{% endif %}
+					</ul>
+				</div>
+			</div>
+		</div> <!-- navbar -->
+	  
+		{% block content %}
+		{% endblock %}
+	</div>
+	
+    <script src="static/js/bootstrap.min.js"></script>
+  </body>
+</html>
