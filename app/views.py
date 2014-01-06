@@ -1,39 +1,39 @@
 from app import app, db, lm
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask import jsonify
-from flask.ext.login import login_user, logout_user
-from flask.ext.login import current_user, login_required
+from flask.ext.login import login_user, logout_user, current_user, login_required
 from models import User, ROLE_USER, ROLE_GUEST, Ingredient, Recipe, RI_Link
 from forms import RegistrationForm, LoginForm, IngredientForm, RecipeForm
 
-
+# Renders index/home page of app
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
     return render_template('index.html')
 
-
-@app.route('/register', methods=['GET', 'POST'])
+# Renders register page of app
+@app.route('/register', methods = ['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if request.method == 'POST' and form.validate():
-        user = User(username=form.username.data,
-                    password=form.password.data)
+        user = User(username = form.username.data,
+                    password = form.password.data)
         db.session.add(user)
         db.session.commit()
+        flash('Thanks for registering!')
         return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title = 'Register', form = form)
 
-
-@app.route('/login', methods=['GET', 'POST'])
+# Renders login page of the app
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('index'))
     form = LoginForm()
     if request.method == 'POST' and form.validate():
         u = form.username.data
-        user = User.query.filter_by(username=u).first()
+        user = User.query.filter_by(username = u).first()
         if user is not None:
             if form.password.data == user.password:
                 login_user(user)
@@ -42,31 +42,32 @@ def login():
                 flash('Incorrect password or username. Please try again.')
                 return redirect(url_for('login'))
         else:
+            flash('Incorrect password or username. Please try again.')
             return redirect(url_for('login'))
-    return render_template('login.html', title='Log In', form=form)
+    return render_template('login.html', title = 'Log In', form = form)
 
-
+# Logs user out
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
-
+# Loads users from the database
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))
-
 
 @app.before_request
 def before_request():
     g.user = current_user
 
-
-@app.route('/add-recipe', methods=['POST', 'GET'])
+# Page for adding recipes into db
+@app.route('/add-recipe', methods = ['POST', 'GET'])
 @login_required
 def add_recipe():
     form = RecipeForm()
     if request.method == 'POST' and form.validate():
+        # Add recipe to database and create ingredient links
         recipe = Recipe(name=form.name.data, type=form.type.data,
                         time=form.time.data, category=form.category.data,
                         serves=form.serves.data, method=form.method.data)
@@ -98,11 +99,10 @@ def add_recipe():
     session['ingredients'] = []
     session.modified = True
     form = RecipeForm()
-    return render_template('add-recipe.html', title='Add Recipe', form=form)
-
+    return render_template('add-recipe.html', title= 'Add Recipe', form = form)
 
 # Receives ajax posts of recipe ingreds to store for current recipe creation
-@app.route('/add-recipe-ingredient', methods=['GET', 'POST'])
+@app.route('/add-recipe-ingredient', methods = ['GET', 'POST'])
 @login_required
 def add_recipe_ingredient():
     if request.method == 'POST':
@@ -113,46 +113,46 @@ def add_recipe_ingredient():
         session.modified = True
         return jsonify(name=name, quantity=quantity, q_type=q_type)
 
-
 # Page for adding ingreds into db
-@app.route('/add-ingredient', methods=['GET', 'POST'])
+@app.route('/add-ingredient', methods = ['GET', 'POST'])
 @login_required
 def add_ingredient():
     form = IngredientForm()
     if request.method == 'POST' and form.validate():
-        ingredient = Ingredient(name=form.name.data,
-                                calories_per_ml=form.calories_per_ml.data,
-                                calories_per_g=form.calories_per_g.data,
-                                calories_per_tbs=form.calories_per_tbs.data,
-                                calories_per_tsp=form.calories_per_tsp.data,
-                                calories_per_each=form.calories_per_each.data)
+        ingredient = Ingredient(name = form.name.data,
+                                calories_per_ml = form.calories_per_ml.data,
+                                calories_per_g = form.calories_per_g.data,
+                                calories_per_tbs = form.calories_per_tbs.data,
+                                calories_per_tsp = form.calories_per_tsp.data,
+                                calories_per_each = form.calories_per_each.data)
         db.session.add(ingredient)
         db.session.commit()
         return redirect(url_for('index'))
     return render_template('add-ingredient.html',
-                           title='Add Ingredient',
-                           form=form)
+                           title= 'Add Ingredient',
+                           form = form)
 
-
+# Main recipe page, add recipe, add ingred etc..
 @app.route('/recipe')
 @login_required
 def recipe():
     return render_template('recipe.html', title='Recipes')
 
-
+# Page lists ingredients in db 
 @app.route('/ingredient-list', methods=['POST', 'GET'])
 @login_required
 def ingredient_list():
     return render_template('ingredient-list.html', title='Ingredient List')
 
-
 # Returns ingredient list from starting char request
-@app.route('/return-ingredient-list', methods=['POST', 'GET'])
+@app.route('/return-ingredient-list', methods = ['POST', 'GET'])
 @login_required
 def return_ingredient_list():
     if request.method == 'POST':
         letter = request.json['value']
-        ingredients = Ingredient.query.filter(Ingredient.name.startswith(letter)).all()
+        ingredients = Ingredient.query.filter(
+                                              Ingredient.name.startswith(letter)
+                                             ).all()
         ingred_list = {}
         count = 1
         ingred_list[0] = len(ingredients)
@@ -161,15 +161,14 @@ def return_ingredient_list():
             count += 1
         return jsonify(ingred_list)
 
-
+# Page lists recipes in db
 @app.route('/recipe-list')
 @login_required
 def recipe_list():
     return render_template('recipe-list.html', title='Recipe List')
 
-
 # Returns recipe list from starting char request
-@app.route('/return-recipe-list', methods=['POST', 'GET'])
+@app.route('/return-recipe-list', methods = ['POST', 'GET'])
 @login_required
 def return_recipe_list():
     if request.method == 'POST':
@@ -182,3 +181,9 @@ def return_recipe_list():
             recipe_list[count] = r.name
             count += 1
         return jsonify(recipe_list)
+
+# Page displays the weekly meal plan
+@app.route('/weekly')
+@login_required
+def weekly():
+    return render_template('weekly.html', title='Weekly Plan')

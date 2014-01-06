@@ -3,10 +3,6 @@
 app.db
 flask
 *.mo
-bootstrap.css
-magic-bootstrap.css
-bootstrap.min.js
-fonts
 
 
 #############

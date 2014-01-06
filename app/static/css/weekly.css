@@ -1,0 +1,39 @@
+.cont-nb {
+  float: left;
+  width: 12.5%;
+}
+
+.cont-ins {
+  float: left;
+  width: 12.5%;
+  border-style: solid;
+  border-width: 1px;
+  background-color: white;
+}
+
+.cont-height {
+  height: 100px;
+}
+
+.cont-title {
+  line-height: 100px;
+  background-color: #557094;
+}
+
+.cont-top {
+  line-height: 100px;
+  background-color: #557094;
+  text-align: center;
+}
+
+.cont-height div {
+  height: 100px;
+}
+
+.top-buffer {
+  height: 50px;
+}
+
+strong {
+  color: white
+}
